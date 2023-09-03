@@ -52,6 +52,7 @@ public class GameServiceImpl implements GameService {
         savedGame.setStartGameTime(LocalDateTime.now());
         savedGame.setHomeTeamScore(0);
         savedGame.setAwayTeamScore(0);
+        savedGame.setVisibleOnBoard(true);
 
         return gameRepository.save(savedGame);
     }

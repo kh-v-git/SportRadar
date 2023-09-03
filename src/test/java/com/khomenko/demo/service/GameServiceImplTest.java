@@ -16,8 +16,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class GameServiceImplTest {
@@ -25,8 +24,12 @@ class GameServiceImplTest {
     private static final String TEAM_B = "Team B";
     private static final String TEAM_C = "Team C";
     private static final String TEAM_D = "Team D";
-    private static final LocalDateTime localDateTime = LocalDateTime.of(2023, Month.AUGUST, 28, 14, 33, 48);
+    private static final LocalDateTime gameStartTime = LocalDateTime.of(2023, Month.AUGUST, 28, 14, 33, 48);
+    private static final LocalDateTime gameEndTime = LocalDateTime.of(2023, Month.AUGUST, 28, 15, 33, 48);
+    private static final LocalDateTime beforeStartGameEndTime = LocalDateTime.of(2023, Month.AUGUST, 28, 13, 33, 48);
     private static final int startScore = 0;
+    private static final int negativeHomeTeamScore = -1;
+    private static final int negativeAwayTeamScore = -1;
 
     @Mock
     private GameRepository gameRepository;
@@ -34,8 +37,9 @@ class GameServiceImplTest {
     @InjectMocks
     private GameServiceImpl gameService;
 
+    //startGame()
     @Test
-    public void bothTeamsDoNotExistInSameGame() {
+    public void bothTeamsDoNotExistInSameGameToStartGame() {
         // Arrange
         Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
         Team awayTeam = Team.builder().countryOfOrigin(TEAM_B).build();
@@ -51,7 +55,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    public void homeTeamHasActiveGame() {
+    public void homeTeamHasActiveGameToStartGame() {
         // Arrange
         Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
         Team awayTeam = Team.builder().countryOfOrigin(TEAM_B).build();
@@ -64,7 +68,7 @@ class GameServiceImplTest {
         Game gameRunning = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(teamC)
-                .startGameTime(localDateTime) // Game started.
+                .startGameTime(gameStartTime) // Game started.
                 .build();
         List<Game> gameList = List.of(game, gameRunning);
 
@@ -75,7 +79,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    public void awayTeamHasActiveGame() {
+    public void awayTeamHasActiveGameToStartGame() {
         // Arrange
         Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
         Team awayTeam = Team.builder().countryOfOrigin(TEAM_B).build();
@@ -88,7 +92,7 @@ class GameServiceImplTest {
         Game gameRunning = Game.builder()
                 .homeTeam(teamD)
                 .awayTeam(awayTeam)
-                .startGameTime(localDateTime) // Game started.
+                .startGameTime(gameStartTime) // Game started.
                 .build();
         List<Game> gameList = List.of(game, gameRunning);
 
@@ -99,14 +103,14 @@ class GameServiceImplTest {
     }
 
     @Test
-    public void gameWithCurrentTeamsAlreadyStarted() {
+    public void gameWithCurrentTeamsAlreadyStartedToStartGame() {
         // Arrange
         Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
         Team awayTeam = Team.builder().countryOfOrigin(TEAM_B).build();
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .startGameTime(localDateTime) // Game has started
+                .startGameTime(gameStartTime) // Game has started
                 .build();
 
         when(gameRepository.findGame(game)).thenReturn(Optional.of(game));
@@ -117,7 +121,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    public void gameWithCurrentTeamsNotStarted() throws CustomBusinessException {
+    public void gameWithCurrentTeamsNotStartedToStartGame() throws CustomBusinessException {
         // Arrange
         Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
         Team awayTeam = Team.builder().countryOfOrigin(TEAM_B).build();
@@ -138,6 +142,123 @@ class GameServiceImplTest {
         assertEquals(startScore, result.getHomeTeamScore());
         assertEquals(startScore, result.getAwayTeamScore());
         assertNotNull(result.getStartGameTime()); // Start time should be set
-        verify(gameRepository).save(result); // Game should be saved with updated start time
+        assertTrue(result.isVisibleOnBoard());
+        verify(gameRepository, times(1)).save(result); // Game should be saved with updated start time
+    }
+
+    //finishGame()
+    @Test
+    public void gameNotExistsToFinishGame() {
+        // Arrange
+        Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
+        Team awayTeam = Team.builder().countryOfOrigin(TEAM_B).build();
+
+        Game game = Game.builder()
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .startGameTime(gameStartTime) // Game has started
+                .build();
+
+        when(gameRepository.findGame(game)).thenReturn(Optional.empty());
+
+        // Act and Assert
+        assertThrows(CustomBusinessException.class, () -> gameService.finishGame(game));
+    }
+
+    @Test
+    public void gameNotStartedToFinishGame() {
+        // Arrange
+        Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
+        Team awayTeam = Team.builder().countryOfOrigin(TEAM_B).build();
+        Game game = Game.builder()
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .startGameTime(null) // Game not started
+                .build();
+
+        when(gameRepository.findGame(game)).thenReturn(Optional.of(game));
+
+        // Act and Assert
+        assertThrows(CustomBusinessException.class, () -> gameService.finishGame(game));
+    }
+
+    @Test
+    public void finishedTimeBeforeStartTimeToFinishGame() {
+        // Arrange
+        Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
+        Team awayTeam = Team.builder().countryOfOrigin(TEAM_A).build();
+
+        Game game = Game.builder()
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .startGameTime(gameStartTime) // Game started
+                .build();
+
+        when(gameRepository.findGame(game)).thenReturn(Optional.of(game));
+
+        // Act and Assert
+        assertThrows(CustomBusinessException.class, () -> gameService.finishGame(game));
+    }
+
+    @Test
+    public void nonPositiveGameScoreToFinishGame() {
+        // Arrange
+        Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
+        Team awayTeam = Team.builder().countryOfOrigin(TEAM_B).build();
+
+        Game game = Game.builder()
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .homeTeamScore(negativeHomeTeamScore)
+                .awayTeamScore(negativeAwayTeamScore)
+                .startGameTime(gameStartTime) // Game started
+                .build();
+
+        when(gameRepository.findGame(game)).thenReturn(Optional.of(game));
+
+        // Act and Assert
+        assertThrows(CustomBusinessException.class, () -> gameService.finishGame(game));
+    }
+
+    @Test
+    public void gameAlreadyFinishedToFinishGame() {
+        // Arrange
+        Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
+        Team awayTeam = Team.builder().countryOfOrigin(TEAM_B).build();
+
+        Game game = Game.builder()
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .startGameTime(gameStartTime) // Game started
+                .endGameTime(gameEndTime) // Game already finished
+                .build();
+
+        when(gameRepository.findGame(game)).thenReturn(Optional.of(game));
+
+        // Act and Assert
+        assertThrows(CustomBusinessException.class, () -> gameService.finishGame(game));
+    }
+
+    @Test
+    public void gameExistsAndStartedToFinishGame() {
+        // Arrange
+        Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
+        Team awayTeam = Team.builder().countryOfOrigin(TEAM_B).build();
+        Game game = Game.builder()
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .startGameTime(LocalDateTime.now()) // Game started
+                .build();
+
+        when(gameRepository.findGame(game)).thenReturn(Optional.of(game));
+
+        // Act
+        Game result = gameService.finishGame(game);
+
+        // Assert
+        assertNotNull(result);
+        assertNotNull(result.getEndGameTime());
+        assertFalse(result.isVisibleOnBoard());
+        verify(gameRepository, times(1)).save(result); // Verify endGameTime is updated
     }
 }
