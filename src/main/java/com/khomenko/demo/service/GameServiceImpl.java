@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -109,6 +110,15 @@ public class GameServiceImpl implements GameService {
      */
     @Override
     public List<Game> getSummaryOfAllGames() throws CustomBusinessException {
-        return null;
+
+        return gameRepository.findAll().stream()
+                .filter(game -> game.getStartGameTime() != null)
+                .sorted((game1, game2) -> {
+                    int scoreDiff = ((game2.getHomeTeamScore() + game2.getAwayTeamScore()) - (game1.getHomeTeamScore() + game1.getAwayTeamScore()));
+                    return scoreDiff != 0
+                            ? scoreDiff
+                            : game2.getStartGameTime().compareTo(game1.getStartGameTime());
+                })
+                .collect(Collectors.toList());
     }
 }

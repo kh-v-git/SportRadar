@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,13 +25,13 @@ class GameServiceImplTest {
     private static final String TEAM_B = "Team B";
     private static final String TEAM_C = "Team C";
     private static final String TEAM_D = "Team D";
-    private static final LocalDateTime gameStartTime = LocalDateTime.of(2023, Month.AUGUST, 28, 14, 33, 48);
-    private static final LocalDateTime gameEndTime = LocalDateTime.of(2023, Month.AUGUST, 28, 15, 33, 48);
-    private static final LocalDateTime beforeStartGameEndTime = LocalDateTime.of(2023, Month.AUGUST, 28, 13, 33, 48);
-    private static final int startScore = 0;
-    private static final int updateScore = 10;
-    private static final int negativeHomeTeamScore = -1;
-    private static final int negativeAwayTeamScore = -1;
+    private static final LocalDateTime GAME_START_TIME = LocalDateTime.of(2023, Month.AUGUST, 28, 14, 33, 48);
+    private static final LocalDateTime GAME_END_TIME = LocalDateTime.of(2023, Month.AUGUST, 28, 15, 33, 48);
+    private static final LocalDateTime BEFORE_START_GAME_TIME = LocalDateTime.of(2023, Month.AUGUST, 28, 13, 33, 48);
+    private static final int START_SCORE = 0;
+    private static final int UPDATE_SCORE = 10;
+    private static final int NEGATIVE_HOME_TEAM_SCORE = -1;
+    private static final int NEGATIVE_AWAY_TEAM_SCORE = -1;
 
     @Mock
     private GameRepository gameRepository;
@@ -69,7 +70,7 @@ class GameServiceImplTest {
         Game gameRunning = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(teamC)
-                .startGameTime(gameStartTime) // Game started.
+                .startGameTime(GAME_START_TIME) // Game started.
                 .build();
         List<Game> gameList = List.of(game, gameRunning);
 
@@ -93,7 +94,7 @@ class GameServiceImplTest {
         Game gameRunning = Game.builder()
                 .homeTeam(teamD)
                 .awayTeam(awayTeam)
-                .startGameTime(gameStartTime) // Game started.
+                .startGameTime(GAME_START_TIME) // Game started.
                 .build();
         List<Game> gameList = List.of(game, gameRunning);
 
@@ -111,7 +112,7 @@ class GameServiceImplTest {
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .startGameTime(gameStartTime) // Game has started
+                .startGameTime(GAME_START_TIME) // Game has started
                 .build();
 
         when(gameRepository.findGame(game)).thenReturn(Optional.of(game));
@@ -140,8 +141,8 @@ class GameServiceImplTest {
 
         // Assert
         assertNotNull(result); // Game should be returned
-        assertEquals(startScore, result.getHomeTeamScore());
-        assertEquals(startScore, result.getAwayTeamScore());
+        assertEquals(START_SCORE, result.getHomeTeamScore());
+        assertEquals(START_SCORE, result.getAwayTeamScore());
         assertNotNull(result.getStartGameTime()); // Start time should be set
         verify(gameRepository, times(1)).save(result); // Game should be saved with updated start time
     }
@@ -156,7 +157,7 @@ class GameServiceImplTest {
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .startGameTime(gameStartTime) // Game has started
+                .startGameTime(GAME_START_TIME) // Game has started
                 .build();
 
         when(gameRepository.findGame(game)).thenReturn(Optional.empty());
@@ -191,16 +192,16 @@ class GameServiceImplTest {
         Game gameSaved = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .homeTeamScore(startScore)
-                .awayTeamScore(startScore)
-                .startGameTime(gameStartTime) // Game started
+                .homeTeamScore(START_SCORE)
+                .awayTeamScore(START_SCORE)
+                .startGameTime(GAME_START_TIME) // Game started
                 .build();
 
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .startGameTime(gameStartTime) // Game started
-                .endGameTime(beforeStartGameEndTime)
+                .startGameTime(GAME_START_TIME) // Game started
+                .endGameTime(BEFORE_START_GAME_TIME)
                 .build();
 
         when(gameRepository.findGame(gameSaved)).thenReturn(Optional.of(gameSaved));
@@ -223,17 +224,17 @@ class GameServiceImplTest {
         Game gameSaved = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .homeTeamScore(startScore)
-                .awayTeamScore(startScore)
-                .startGameTime(gameStartTime) // Game started
+                .homeTeamScore(START_SCORE)
+                .awayTeamScore(START_SCORE)
+                .startGameTime(GAME_START_TIME) // Game started
                 .build();
 
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .homeTeamScore(negativeHomeTeamScore)
-                .awayTeamScore(negativeAwayTeamScore)
-                .startGameTime(gameStartTime) // Game started
+                .homeTeamScore(NEGATIVE_HOME_TEAM_SCORE)
+                .awayTeamScore(NEGATIVE_AWAY_TEAM_SCORE)
+                .startGameTime(GAME_START_TIME) // Game started
                 .build();
 
         when(gameRepository.findGame(gameSaved)).thenReturn(Optional.of(gameSaved));
@@ -253,8 +254,8 @@ class GameServiceImplTest {
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .startGameTime(gameStartTime) // Game started
-                .endGameTime(gameEndTime) // Game already finished
+                .startGameTime(GAME_START_TIME) // Game started
+                .endGameTime(GAME_END_TIME) // Game already finished
                 .build();
 
 
@@ -273,18 +274,18 @@ class GameServiceImplTest {
         Game gameSaved = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .homeTeamScore(startScore)
-                .awayTeamScore(startScore)
-                .startGameTime(gameStartTime) // Game started
+                .homeTeamScore(START_SCORE)
+                .awayTeamScore(START_SCORE)
+                .startGameTime(GAME_START_TIME) // Game started
                 .build();
 
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .homeTeamScore(startScore)
-                .awayTeamScore(startScore)
-                .startGameTime(gameStartTime) // Game started
-                .endGameTime(gameEndTime) // Game finished
+                .homeTeamScore(START_SCORE)
+                .awayTeamScore(START_SCORE)
+                .startGameTime(GAME_START_TIME) // Game started
+                .endGameTime(GAME_END_TIME) // Game finished
                 .build();
 
         when(gameRepository.findGame(game)).thenReturn(Optional.of(gameSaved));
@@ -308,9 +309,9 @@ class GameServiceImplTest {
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .homeTeamScore(startScore)
-                .homeTeamScore(startScore)
-                .startGameTime(gameStartTime)
+                .homeTeamScore(START_SCORE)
+                .homeTeamScore(START_SCORE)
+                .startGameTime(GAME_START_TIME)
                 .build();
 
         when(gameRepository.findGame(game)).thenReturn(Optional.empty());
@@ -327,8 +328,8 @@ class GameServiceImplTest {
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .homeTeamScore(startScore)
-                .homeTeamScore(startScore)
+                .homeTeamScore(START_SCORE)
+                .homeTeamScore(START_SCORE)
                 .startGameTime(null) // Game not started
                 .build();
 
@@ -347,10 +348,10 @@ class GameServiceImplTest {
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .homeTeamScore(startScore)
-                .homeTeamScore(startScore)
-                .startGameTime(gameStartTime) // Game started
-                .endGameTime(gameEndTime) // Game already finished
+                .homeTeamScore(START_SCORE)
+                .homeTeamScore(START_SCORE)
+                .startGameTime(GAME_START_TIME) // Game started
+                .endGameTime(GAME_END_TIME) // Game already finished
                 .build();
 
         when(gameRepository.findGame(game)).thenReturn(Optional.of(game));
@@ -368,17 +369,17 @@ class GameServiceImplTest {
         Game gameSaved = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .homeTeamScore(startScore)
-                .awayTeamScore(startScore)
-                .startGameTime(gameStartTime) // Game started
+                .homeTeamScore(START_SCORE)
+                .awayTeamScore(START_SCORE)
+                .startGameTime(GAME_START_TIME) // Game started
                 .build();
 
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .homeTeamScore(negativeHomeTeamScore)
-                .awayTeamScore(negativeAwayTeamScore)
-                .startGameTime(gameStartTime) // Game started
+                .homeTeamScore(NEGATIVE_HOME_TEAM_SCORE)
+                .awayTeamScore(NEGATIVE_AWAY_TEAM_SCORE)
+                .startGameTime(GAME_START_TIME) // Game started
                 .build();
 
         when(gameRepository.findGame(game)).thenReturn(Optional.of(gameSaved));
@@ -394,17 +395,17 @@ class GameServiceImplTest {
         Game gameSaved = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .homeTeamScore(startScore)
-                .awayTeamScore(startScore)
-                .startGameTime(gameStartTime)
+                .homeTeamScore(START_SCORE)
+                .awayTeamScore(START_SCORE)
+                .startGameTime(GAME_START_TIME)
                 .build();
 
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .homeTeamScore(updateScore)
-                .awayTeamScore(updateScore)
-                .startGameTime(gameStartTime)
+                .homeTeamScore(UPDATE_SCORE)
+                .awayTeamScore(UPDATE_SCORE)
+                .startGameTime(GAME_START_TIME)
                 .build();
 
         when(gameRepository.findGame(game)).thenReturn(Optional.of(gameSaved));
@@ -415,10 +416,76 @@ class GameServiceImplTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(updateScore, result.getHomeTeamScore());
-        assertEquals(updateScore, result.getAwayTeamScore());
+        assertEquals(UPDATE_SCORE, result.getHomeTeamScore());
+        assertEquals(UPDATE_SCORE, result.getAwayTeamScore());
         verify(gameRepository, times(1)).save(game); // Verify endGameTime is updated
     }
 
+    @Test
+    public void noStartedGamesNoGamesInSummary() {
+        // Arrange
+        Team homeTeamA = Team.builder().countryOfOrigin(TEAM_A).build();
+        Team awayTeamB = Team.builder().countryOfOrigin(TEAM_B).build();
+        Team homeTeamC = Team.builder().countryOfOrigin(TEAM_C).build();
+        Team awayTeamD = Team.builder().countryOfOrigin(TEAM_D).build();
 
+        Game game1 = Game.builder()
+                .homeTeam(homeTeamA)
+                .awayTeam(awayTeamB)
+                .homeTeamScore(START_SCORE)
+                .awayTeamScore(START_SCORE)
+                .build();
+
+        Game game2 = Game.builder()
+                .homeTeam(homeTeamC)
+                .awayTeam(awayTeamD)
+                .homeTeamScore(START_SCORE)
+                .awayTeamScore(START_SCORE)
+                .build();
+
+        when(gameRepository.findAll()).thenReturn(List.of(game1, game2));
+
+        // Act and Assert
+        assertEquals(Collections.emptyList(), gameService.getSummaryOfAllGames());
+    }
+
+    @Test
+    public void startedGamesReturnGamesSummary() {
+        // Arrange
+        Team teamA = Team.builder().countryOfOrigin(TEAM_A).build();
+        Team teamB = Team.builder().countryOfOrigin(TEAM_B).build();
+        Team teamC = Team.builder().countryOfOrigin(TEAM_C).build();
+        Team teamD = Team.builder().countryOfOrigin(TEAM_D).build();
+
+        Game game1 = Game.builder()
+                .homeTeam(teamA)
+                .awayTeam(teamB)
+                .homeTeamScore(0)
+                .awayTeamScore(3)
+                .startGameTime(GAME_START_TIME)
+                .endGameTime(GAME_END_TIME)
+                .build();
+
+        Game game2 = Game.builder()
+                .homeTeam(teamC)
+                .awayTeam(teamD)
+                .homeTeamScore(3)
+                .awayTeamScore(2)
+                .startGameTime(BEFORE_START_GAME_TIME)
+                .endGameTime(GAME_START_TIME)
+                .build();
+
+        Game game3 = Game.builder()
+                .homeTeam(teamA)
+                .awayTeam(teamD)
+                .homeTeamScore(3)
+                .awayTeamScore(2)
+                .startGameTime(GAME_END_TIME)
+                .build();
+
+        when(gameRepository.findAll()).thenReturn(List.of(game1, game2, game3));
+
+        // Act and Assert
+        assertEquals(List.of(game3, game2, game1), gameService.getSummaryOfAllGames());
+    }
 }

@@ -31,6 +31,13 @@ GameServiceImpl executes all business logic:
   - Game was not finished.
   - Home team and away update team scores >= 0.
 
+
+- getSummaryOfAllGames();
+
+  _Assumptions_:
+  - Return empty list if no games started.
+  - Return list sorted by total score sum + game start time.
+
 General assumptions:
 default value for undefined Objects is null.
 
