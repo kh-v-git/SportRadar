@@ -8,20 +8,28 @@ GameServiceImpl executes all business logic:
 
   _Assumptions_:
     - All Teams exist in system or are given. Each team has unique country of origin. No CRUD functionality for Team.
-    - All Games exist in the system or are given. Each game is unique in terms of team composition. No CRUD
+    - All Games exist in the system or are given. Each game is unique in terms of team composition. No CRUD.
       functionality for Game.
     - Two teams do not play against each other more than once.
-    - Before start game in not visible on the board
 
 
 - finishGame();
 
   _Assumptions_:
-    - Game exists in the repository, unique by playing teams
-    - Game was started
-    - Game was not finished
+    - Game exists in the repository, unique by playing teams.
+    - Game was started.
+    - Game was not finished.
     - Home team and away team scores >= 0.
-    - Game hase boolean marker visibility
+    - Game is not visible when has end game time.
+
+
+- updateScore();
+
+  _Assumptions_:
+  - Game exists in the repository, unique by playing teams.
+  - Game was started.
+  - Game was not finished.
+  - Home team and away update team scores >= 0.
 
 General assumptions:
 default value for undefined Objects is null.

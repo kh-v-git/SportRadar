@@ -38,8 +38,4 @@ public class Game {
 
     @Transient
     private LocalDateTime endGameTime;
-
-    @Transient
-    @Builder.Default
-    private boolean visibleOnBoard = false;
 }

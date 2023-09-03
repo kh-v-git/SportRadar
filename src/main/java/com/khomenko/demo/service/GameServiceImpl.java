@@ -52,7 +52,6 @@ public class GameServiceImpl implements GameService {
         savedGame.setStartGameTime(LocalDateTime.now());
         savedGame.setHomeTeamScore(0);
         savedGame.setAwayTeamScore(0);
-        savedGame.setVisibleOnBoard(true);
 
         return gameRepository.save(savedGame);
     }
@@ -79,7 +78,6 @@ public class GameServiceImpl implements GameService {
         savedGame.setEndGameTime(LocalDateTime.now());
         savedGame.setHomeTeamScore(game.getHomeTeamScore());
         savedGame.setAwayTeamScore(game.getAwayTeamScore());
-        savedGame.setVisibleOnBoard(false);
 
         return gameRepository.save(savedGame);
     }
