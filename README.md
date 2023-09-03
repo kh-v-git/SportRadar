@@ -9,6 +9,8 @@ GameServiceImpl executes all business logic:
     - All Games exist in the system or are given. Each game is unique in terms of team composition. No CRUD functionality for Game.
     - Two teams do not play against each other more than once.
 
+General assumptions:
+  default value for undefined Objects is null.
 
 
 ### Application Requirements

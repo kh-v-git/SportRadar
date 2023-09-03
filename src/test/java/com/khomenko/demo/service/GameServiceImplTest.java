@@ -32,7 +32,7 @@ class GameServiceImplTest {
     private GameRepository gameRepository;
 
     @InjectMocks
-    private GameService gameService;
+    private GameServiceImpl gameService;
 
     @Test
     public void bothTeamsDoNotExistInSameGame() {
@@ -112,6 +112,7 @@ class GameServiceImplTest {
         when(gameRepository.findGame(game)).thenReturn(Optional.of(game));
 
         // Act and Assert
+        assertNotNull(game.getStartGameTime());
         assertThrows(CustomBusinessException.class, () -> gameService.startGame(game));
     }
 
@@ -126,8 +127,8 @@ class GameServiceImplTest {
                 .awayTeam(awayTeam)
                 .startGameTime(null) // Game has not started yet
                 .build();
-
         when(gameRepository.findGame(any())).thenReturn(Optional.of(game));
+        when(gameRepository.save(game)).thenReturn(game);
 
         // Act
         Game result = gameService.startGame(game);

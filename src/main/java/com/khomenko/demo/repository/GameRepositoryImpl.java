@@ -23,6 +23,12 @@ public class GameRepositoryImpl implements GameRepository {
      */
     @Override
     public Game save(Game game) {
+        if (gameSet.contains(game)) {
+            gameSet.remove(game);
+            gameSet.add(game);
+
+            return game;
+        }
         gameSet.add(game);
         return game;
     }

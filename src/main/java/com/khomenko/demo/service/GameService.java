@@ -2,6 +2,7 @@ package com.khomenko.demo.service;
 
 import com.khomenko.demo.domain.Game;
 import com.khomenko.demo.utils.exception.CustomBusinessException;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface GameService {
      * @return The started game.
      * @throws CustomBusinessException If an error occurs during game start.
      */
-    Game startGame(Game game) throws CustomBusinessException;
+    Game startGame(@NonNull Game game) throws CustomBusinessException;
 
     /**
      * Finishes a game and removes it from the scoreboard.
@@ -27,7 +28,7 @@ public interface GameService {
      * @return The finished game.
      * @throws CustomBusinessException If an error occurs during game finishing.
      */
-    Game finishGame(Game game) throws CustomBusinessException;
+    Game finishGame(@NonNull Game game) throws CustomBusinessException;
 
     /**
      * Updates the score of a game with the provided home team and away team scores.
@@ -36,7 +37,7 @@ public interface GameService {
      * @return The updated game.
      * @throws CustomBusinessException If an error occurs during score update.
      */
-    Game updateScore(Game game) throws CustomBusinessException;
+    Game updateScore(@NonNull Game game) throws CustomBusinessException;
 
     /**
      * Retrieves a summary of all games by total score. Games with the same total score are grouped together.
