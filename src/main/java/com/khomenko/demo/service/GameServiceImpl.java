@@ -62,7 +62,26 @@ public class GameServiceImpl implements GameService {
      */
     @Override
     public Game finishGame(@NonNull Game game) throws CustomBusinessException {
-        return null;
+        Game savedGame = gameRepository.findGame(game).orElseThrow(() -> new CustomBusinessException(String.format("Game is missing. Failed to finish game with teams: %s, %s.", game.getHomeTeam(), game.getAwayTeam())));
+
+        if (savedGame.getStartGameTime() == null)
+            throw new CustomBusinessException(String.format("Game is not started. Failed to finish game with teams: %s, %s.", game.getHomeTeam(), game.getAwayTeam()));
+
+        if (savedGame.getEndGameTime() != null)
+            throw new CustomBusinessException(String.format("Game is already finished. Failed to finish game with teams: %s, %s.", game.getHomeTeam(), game.getAwayTeam()));
+
+        if (game.getEndGameTime().isBefore(savedGame.getStartGameTime()))
+            throw new CustomBusinessException(String.format("Game cannot be finished before started time. Failed to finish game with teams: %s, %s.", game.getHomeTeam(), game.getAwayTeam()));
+
+        if (game.getHomeTeamScore() < 0 || game.getAwayTeamScore() < 0)
+            throw new CustomBusinessException(String.format("Game cannot be finished with negative scores. Failed to finish game with teams: %s, %s.", game.getHomeTeam(), game.getAwayTeam()));
+
+        savedGame.setEndGameTime(LocalDateTime.now());
+        savedGame.setHomeTeamScore(game.getHomeTeamScore());
+        savedGame.setAwayTeamScore(game.getAwayTeamScore());
+        savedGame.setVisibleOnBoard(false);
+
+        return gameRepository.save(savedGame);
     }
 
     /**

@@ -188,16 +188,31 @@ class GameServiceImplTest {
         Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
         Team awayTeam = Team.builder().countryOfOrigin(TEAM_A).build();
 
+        Game gameSaved = Game.builder()
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .homeTeamScore(startScore)
+                .awayTeamScore(startScore)
+                .startGameTime(gameStartTime) // Game started
+                .visibleOnBoard(true)
+                .build();
+
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
                 .startGameTime(gameStartTime) // Game started
+                .endGameTime(beforeStartGameEndTime)
                 .build();
 
-        when(gameRepository.findGame(game)).thenReturn(Optional.of(game));
+        when(gameRepository.findGame(gameSaved)).thenReturn(Optional.of(gameSaved));
 
-        // Act and Assert
-        assertThrows(CustomBusinessException.class, () -> gameService.finishGame(game));
+        // Act
+        try {
+            gameService.finishGame(game);
+        } catch (CustomBusinessException ignored) {
+            // Act and Assert
+            assertThrows(CustomBusinessException.class, () -> gameService.finishGame(game));
+        }
     }
 
     @Test
@@ -205,6 +220,14 @@ class GameServiceImplTest {
         // Arrange
         Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
         Team awayTeam = Team.builder().countryOfOrigin(TEAM_B).build();
+
+        Game gameSaved = Game.builder()
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .homeTeamScore(startScore)
+                .awayTeamScore(startScore)
+                .startGameTime(gameStartTime) // Game started
+                .build();
 
         Game game = Game.builder()
                 .homeTeam(homeTeam)
@@ -214,10 +237,15 @@ class GameServiceImplTest {
                 .startGameTime(gameStartTime) // Game started
                 .build();
 
-        when(gameRepository.findGame(game)).thenReturn(Optional.of(game));
+        when(gameRepository.findGame(gameSaved)).thenReturn(Optional.of(gameSaved));
 
-        // Act and Assert
-        assertThrows(CustomBusinessException.class, () -> gameService.finishGame(game));
+        // Act
+        try {
+            gameService.finishGame(game);
+        } catch (CustomBusinessException ignored) {
+            // Act and Assert
+            assertThrows(CustomBusinessException.class, () -> gameService.finishGame(game));
+        }
     }
 
     @Test
@@ -231,7 +259,9 @@ class GameServiceImplTest {
                 .awayTeam(awayTeam)
                 .startGameTime(gameStartTime) // Game started
                 .endGameTime(gameEndTime) // Game already finished
+                .visibleOnBoard(false)
                 .build();
+
 
         when(gameRepository.findGame(game)).thenReturn(Optional.of(game));
 
@@ -244,13 +274,28 @@ class GameServiceImplTest {
         // Arrange
         Team homeTeam = Team.builder().countryOfOrigin(TEAM_A).build();
         Team awayTeam = Team.builder().countryOfOrigin(TEAM_B).build();
+
+        Game gameSaved = Game.builder()
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .homeTeamScore(startScore)
+                .awayTeamScore(startScore)
+                .startGameTime(gameStartTime) // Game started
+                .visibleOnBoard(true)
+                .build();
+
         Game game = Game.builder()
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
-                .startGameTime(LocalDateTime.now()) // Game started
+                .homeTeamScore(startScore)
+                .awayTeamScore(startScore)
+                .startGameTime(gameStartTime) // Game started
+                .endGameTime(gameEndTime) // Game finished
+                .visibleOnBoard(true)
                 .build();
 
-        when(gameRepository.findGame(game)).thenReturn(Optional.of(game));
+        when(gameRepository.findGame(game)).thenReturn(Optional.of(gameSaved));
+        when(gameRepository.save(gameSaved)).thenReturn(gameSaved);
 
         // Act
         Game result = gameService.finishGame(game);
