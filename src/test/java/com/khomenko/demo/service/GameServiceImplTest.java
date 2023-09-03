@@ -238,13 +238,10 @@ class GameServiceImplTest {
 
         when(gameRepository.findGame(gameSaved)).thenReturn(Optional.of(gameSaved));
 
-        // Act
-        try {
-            gameService.finishGame(game);
-        } catch (CustomBusinessException ignored) {
-            // Act and Assert
-            assertThrows(CustomBusinessException.class, () -> gameService.finishGame(game));
-        }
+
+        // Act and Assert
+        assertThrows(CustomBusinessException.class, () -> gameService.finishGame(game));
+
     }
 
     @Test
@@ -384,15 +381,9 @@ class GameServiceImplTest {
                 .startGameTime(gameStartTime) // Game started
                 .build();
 
-        when(gameRepository.findGame(gameSaved)).thenReturn(Optional.of(gameSaved));
+        when(gameRepository.findGame(game)).thenReturn(Optional.of(gameSaved));
 
-        // Act
-        try {
-            gameService.updateScore(game);
-        } catch (CustomBusinessException ignored) {
-            // Act and Assert
-            assertThrows(CustomBusinessException.class, () -> gameService.updateScore(game));
-        }
+        assertThrows(CustomBusinessException.class, () -> gameService.updateScore(game));
     }
 
     @Test
@@ -404,7 +395,7 @@ class GameServiceImplTest {
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
                 .homeTeamScore(startScore)
-                .homeTeamScore(startScore)
+                .awayTeamScore(startScore)
                 .startGameTime(gameStartTime)
                 .build();
 
@@ -412,12 +403,12 @@ class GameServiceImplTest {
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
                 .homeTeamScore(updateScore)
-                .homeTeamScore(updateScore)
+                .awayTeamScore(updateScore)
                 .startGameTime(gameStartTime)
                 .build();
 
         when(gameRepository.findGame(game)).thenReturn(Optional.of(gameSaved));
-        when(gameRepository.save(game)).thenReturn(game);
+        when(gameRepository.save(gameSaved)).thenReturn(gameSaved);
 
         // Act
         Game result = gameService.updateScore(game);
@@ -428,4 +419,6 @@ class GameServiceImplTest {
         assertEquals(updateScore, result.getAwayTeamScore());
         verify(gameRepository, times(1)).save(game); // Verify endGameTime is updated
     }
+
+
 }

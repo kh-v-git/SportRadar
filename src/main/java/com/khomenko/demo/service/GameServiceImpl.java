@@ -87,7 +87,21 @@ public class GameServiceImpl implements GameService {
      */
     @Override
     public Game updateScore(@NonNull Game game) throws CustomBusinessException {
-        return null;
+        Game savedGame = gameRepository.findGame(game).orElseThrow(() -> new CustomBusinessException(String.format("Game is missing. Failed to update score for game with teams: %s, %s.", game.getHomeTeam(), game.getAwayTeam())));
+
+        if (savedGame.getStartGameTime() == null)
+            throw new CustomBusinessException(String.format("Game is not started. Failed to update score for game with teams:  %s, %s.", game.getHomeTeam(), game.getAwayTeam()));
+
+        if (savedGame.getEndGameTime() != null)
+            throw new CustomBusinessException(String.format("Game is already finished. Failed to update score for game with teams: %s, %s.", game.getHomeTeam(), game.getAwayTeam()));
+
+        if (game.getHomeTeamScore() < 0 || game.getAwayTeamScore() < 0)
+            throw new CustomBusinessException(String.format("Scores to update are negative. Failed to update score for  game with teams: %s, %s.", game.getHomeTeam(), game.getAwayTeam()));
+
+        savedGame.setHomeTeamScore(game.getHomeTeamScore());
+        savedGame.setAwayTeamScore(game.getAwayTeamScore());
+
+        return gameRepository.save(savedGame);
     }
 
     /**
