@@ -1,7 +1,15 @@
 ## SportRadar demo application
 
-### About the Service
-Lets rock!
+### About Service
+GameServiceImpl executes all business logic:
+- startGame();
+
+    _Assumptions_:
+    - All Teams exist in system or are given. Each team has unique country of origin. No CRUD functionality for Team.
+    - All Games exist in the system or are given. Each game is unique in terms of team composition. No CRUD functionality for Game.
+    - Two teams do not play against each other more than once.
+
+
 
 ### Application Requirements
 For building and running application you will need: 

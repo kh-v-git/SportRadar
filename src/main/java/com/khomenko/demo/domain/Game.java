@@ -2,6 +2,7 @@ package com.khomenko.demo.domain;
 
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.data.annotation.Transient;
 
 import java.time.LocalDateTime;
 
@@ -24,8 +25,12 @@ import java.time.LocalDateTime;
 public class Game {
     private Team homeTeam;
     private Team awayTeam;
+    @Transient
     private int homeTeamScore;
+    @Transient
     private int awayTeamScore;
+    @Transient
     private LocalDateTime startGameTime;
+    @Transient
     private LocalDateTime endGameTime;
 }

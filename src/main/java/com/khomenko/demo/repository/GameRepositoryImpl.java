@@ -1,6 +1,7 @@
 package com.khomenko.demo.repository;
 
 import com.khomenko.demo.domain.Game;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
@@ -8,6 +9,8 @@ import java.util.*;
 /**
  * An implementation of the GameRepository interface that manages game data in a HashSet.
  */
+
+@Component
 public class GameRepositoryImpl implements GameRepository {
 
     /**
